@@ -1,0 +1,58 @@
+---
+title: "Untitled"
+format: html
+editor: visual
+---
+
+```{r}
+data <- read.csv("C:/Users/zach1/Desktop/四上/統計諮詢/HW MNIST/MNIST_train.csv")
+kable(table(data[,1]))
+
+```
+
+
+計算出tsne的分類與繪圖的座標。
+```{r}
+set.seed(123)
+#install.packages("Rtsne")
+library(Rtsne)
+library(ggplot2)
+data_1 <- as.matrix(data[,1:ncol(data)])
+model <- Rtsne(data_1)
+model1 <- model 
+plot_ <- data.frame(x=model1$Y[,1],y=model1$Y[,2],Num=data$label)
+
+```
+
+計算0~9的重心，方便後續標示類別到各自區塊的中心。
+
+```{r}
+meanx <- c()
+for(i in 0:9){
+  meanx <- c(meanx,mean(plot_[plot_$Num==i,1]))
+}
+meany <- c()
+for (j in 0:9){
+  meany <- c(meany,mean(plot_[plot_$Num==j,2]))
+}
+num <- c(0:9)
+point <- data.frame(meanx,meany,num)
+
+```
+繪製圖表，可以發現，分類得清楚。
+
+```{r}
+ggplot(plot_, aes(x=x, y=y, color=as.factor(Num))) +
+  geom_point() +
+  geom_text(data = point, aes(x = meanx, y = meany, label = num),
+            color = "black", size = 5, fontface = "bold") +
+  theme_minimal() +
+  labs(title="t-SNE of MNIST",
+       x="Dim1",y="Dim2")
+
+```
+
+
+
+
+
